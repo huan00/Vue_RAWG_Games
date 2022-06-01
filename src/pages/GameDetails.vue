@@ -6,7 +6,7 @@
       </div>
     </section>
     <section v-if="gameDetails" class="details">
-      <div class="flex-row space"></div>
+      <!-- <div class="flex-row space"></div> -->
       <div >
         <h3>{{gameDetails.name}}</h3>
         <p>{{gameDetails.description_raw}}</p>

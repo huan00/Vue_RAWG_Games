@@ -3,13 +3,15 @@
       <div v-for="(data) in pageArray" :key="data.id">
         <PlatformCard  :result="data" @click="selectPlatform(data.id)"/>
       </div>
-      <div class='pagination'>
-      <p v-for=" page in pageNumber" :key="page" @click='handlePage(page)'>{{page}}</p>
-      </div>
-    </div>
-    <div v-else >
-      <p>loading...</p>
+      
   </div>
+  <div class='pagination'>
+        <p v-for=" page in pageNumber" :key="page" @click='handlePage(page)'>{{page}}</p>
+      </div>
+    <!-- <div v-else >
+      <p>loading...</p>
+    </div> -->
+
 </template>
 
 <script>
@@ -26,7 +28,8 @@ export default {
     pageArray: [],
     currentPage: 1,
     lastDisplay: 0,
-    currentDisplay: 6
+    currentDisplay: 8,
+    displayPerPage: 8
   }),
   mounted(){
     this.getPlatform()
@@ -36,7 +39,8 @@ export default {
       const res = await axios.get(`https://api.rawg.io/api/platforms?key=${this.API_KEY}`)
       let newData = res.data.results
       this.platforms = newData
-      this.pageNumber =Math.ceil(this.platforms.length / 6)
+      this.pageNumber =Math.ceil(this.platforms.length / this.displayPerPage)
+      this.pageArray = newData.slice(0, this.displayPerPage)
     },
     selectPlatform(platformId){
         this.$router.push(`/platform/detail/${platformId}`)
@@ -46,8 +50,8 @@ export default {
         this.displayPage()
       },
     displayPage (){
-      this.lastDisplay = (this.currentPage - 1) * 6
-      this.currentDisplay = this.currentPage * 6
+      this.lastDisplay = (this.currentPage - 1) * this.displayPerPage
+      this.currentDisplay = this.currentPage * this.displayPerPage
       this.pageArray = this.platforms.slice(this.lastDisplay,this.currentDisplay)
     }
   }
@@ -56,18 +60,5 @@ export default {
 </script>
 
 <style lang="postcss">
-.pagination {
-  display: flex;
-  width: 100%;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1.3em;
 
-  position: absolute;
-  top: 90%;
-  
-}
-.pagination * {
-  margin: 0 10px;
-}
 </style>

@@ -42,16 +42,20 @@ import GameCard from '../components/GameCard.vue'
       currentPage: 1,
       pageArray: [],
       lastDisplay: 0,
-      currentDisplay: 6
+      currentDisplay: 8,
+      displayPerPage: 8,
     }),
-    mounted() {this.getGamesByGenre()},
+    mounted() {
+      this.getGamesByGenre()
+    },
     methods: {
       async getGamesByGenre() {
         // Get Genre Id here
         const res = await axios.get(`https://api.rawg.io/api/games?genres=${this.$route.params.genre_id}&key=${this.API_KEY}`)
 
         this.games = res.data.results
-        this.pageNumber = Math.ceil(this.games.length / 6)
+        this.pageNumber = Math.ceil(this.games.length / this.displayPerPage)
+        this.pageArray = this.games.slice(0, this.displayPerPage)
 
       
       },
@@ -75,8 +79,8 @@ import GameCard from '../components/GameCard.vue'
         this.displayPage()
       },
       displayPage (){
-        this.lastDisplay = (this.currentPage - 1) * 6
-        this.currentDisplay = this.currentPage * 6
+        this.lastDisplay = (this.currentPage - 1) * this.displayPerPage
+        this.currentDisplay = this.currentPage * this.displayPerPage
         this.pageArray = this.games.slice(this.lastDisplay, this.currentDisplay)
       }
     }

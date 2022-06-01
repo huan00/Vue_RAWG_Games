@@ -11,9 +11,6 @@
         <div v-for="(result, index) in searchResults" :key="result.id" >
           <GameCard v-if="index >= lastDisplay && index < currentDisplay" :result="result" @click="selectGame(result.id)" :genre="false"/>
         </div>
-        <div class='pagination' v-if="searched === true">
-      <p v-for=" page in pageNumber" :key="page" @click='handlePage(page)'>{{page}}</p>
-        </div>
       </section>
     </div>
 
@@ -24,9 +21,9 @@
           <GenreCard v-if="index >= lastDisplay && index < currentDisplay" v-bind:genre="genre" @click="selectGenre(genre.id)" />
         </div>
       </section>
-      <div class='pagination'>
-      <p v-for=" page in pageNumber" :key="page" @click='handlePage(page)'>{{page}}</p>
-      </div>
+    </div>
+    <div class='pagination'>
+      <p v-for="page in pageNumber" :key="page" @click='handlePage(page)'>{{page}}</p>
     </div>
   </div>
 </template>
@@ -43,6 +40,7 @@ import GameCard from '../components/GameCard.vue'
     },
     data: () => ({
       API_KEY: process.env.VUE_APP_RAWG_KEY,
+      windowWidth: window.innerWidth,
       genres: [],
       searchQuery: '',
       searchResults: [],
@@ -50,7 +48,8 @@ import GameCard from '../components/GameCard.vue'
       pageNumber: '',
       currentPage: 1,
       lastDisplay: 0,
-      currentDisplay: 6,
+      currentDisplay: 8,//6, //use css grid or get window width to determine display size.
+      numberOfDisplay: 8,
       pageArray: []
     }),
     mounted() {
@@ -60,7 +59,7 @@ import GameCard from '../components/GameCard.vue'
       async getGenres() {
         const res = await axios.get(`https://api.rawg.io/api/genres?key=${this.API_KEY}`)
         this.genres = res.data.results
-        this.pageNumber = Math.ceil(this.genres.length / 6)
+        this.pageNumber = Math.ceil(this.genres.length / this.numberOfDisplay)
 
       },
       async getSearchResults(e) {
@@ -83,9 +82,9 @@ import GameCard from '../components/GameCard.vue'
         this.displayPage()
       },
       displayPage (){
-        this.lastDisplay = (this.currentPage - 1) * 6
-        this.currentDisplay = this.currentPage * 6
-      }
+        this.lastDisplay = (this.currentPage - 1) * this.numberOfDisplay
+        this.currentDisplay = this.currentPage * this.numberOfDisplay
+      },
     }
   }
 </script>
@@ -93,16 +92,12 @@ import GameCard from '../components/GameCard.vue'
 <style lang="postcss">
 .pagination {
   display: flex;
-  width: 100%;
   justify-content: center;
-  cursor: pointer;
-  font-size: 1.3em;
+  align-items: center;
+}
 
-  position: absolute;
-  top: 90%;
-  
+.pagination p {
+  margin: 0 10px 0 0;
 }
-.pagination * {
-  margin: 0 10px;
-}
+
 </style>
